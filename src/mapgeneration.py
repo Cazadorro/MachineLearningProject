@@ -36,7 +36,8 @@ def get_cost_matrix(np_matrix, move_cost=1):
         second_index = to_1d_index(index,  matrix_width)
         for adjacent_index in adjacent_indices:
             first_index = to_1d_index(adjacent_index,  matrix_width)
-            cost_matrix[first_index, second_index] = (cost ** 2) * np.linalg.norm(
+            cost_2 = np_matrix[adjacent_index]
+            cost_matrix[first_index, second_index] = (((cost + cost_2)/2) ** 2) * np.linalg.norm(
                 np.array(index) - np.array(adjacent_index)) + move_cost
             temp = cost_matrix[first_index, second_index]
     for i in range(number_cells):
