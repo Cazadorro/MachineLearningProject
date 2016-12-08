@@ -1,7 +1,7 @@
 #!/bin/bash
 
 import numpy as np
-from src.maputilities import ii8, in_bounds, to_1d_index
+from src.maputilities import ii8, in_bounds, to_1d_index, from_1d_index
 
 
 def generate_map(width, height):
@@ -29,7 +29,8 @@ def generate_adjacent_indices(point, shape, reach):
 
 def get_cost_matrix(np_matrix, move_cost=1):
     number_cells = np_matrix.size
-    cost_matrix = np.full((number_cells, number_cells), np.inf)
+    cost_matrix = np.full((number_cells, number_cells), np.inf, dtype='float')
+    path_matrix = np.full((number_cells, number_cells), -1, dtype = 'int')
     matrix_width = np_matrix.shape[1]
     for index, cost in np.ndenumerate(np_matrix):
         adjacent_indices = generate_adjacent_indices(index, np_matrix.shape, 1)
@@ -37,10 +38,15 @@ def get_cost_matrix(np_matrix, move_cost=1):
         for adjacent_index in adjacent_indices:
             first_index = to_1d_index(adjacent_index,  matrix_width)
             cost_2 = np_matrix[adjacent_index]
-            cost_matrix[first_index, second_index] = (((cost + cost_2)/2) ** 2) * np.linalg.norm(
-                np.array(index) - np.array(adjacent_index)) + move_cost
+            cost_matrix[first_index, second_index] = ((((cost + cost_2)/2) ** 2) + move_cost) * np.linalg.norm(
+                np.array(index) - np.array(adjacent_index))
             temp = cost_matrix[first_index, second_index]
+            if temp != np.inf:
+                path_matrix[first_index, second_index] = second_index
     for i in range(number_cells):
+        # if np_matrix[from_1d_index(i)] == np.inf:
+        #     cost_matrix[i,i] = np.inf
         # initializing diagonals to 0 (takes not cost to get to the same cell)
         cost_matrix[i, i] = 0
-    return cost_matrix
+        path_matrix[i, i] = i
+    return cost_matrix, path_matrix

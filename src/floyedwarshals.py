@@ -28,10 +28,18 @@ def follow_floyd(char_map, path_matrix, start, end):
     tchar_map = deepcopy(char_map)
     width = len(char_map[0])
     current = start
+    path_array = []
+    path_array.append(current)
     end1d = to_1d_index(end, width)
+    tchar_map[current[0]][current[1]] = '*'
+    print(tchar_map)
     while current != end:
-        tchar_map[current[0]][current[1]] = '*'
-        print(tchar_map)
+
         current1d = to_1d_index(current, width)
         next1d = path_matrix[current1d, end1d]
-        current = from_1d_index(next1d, width)
+        current_t = from_1d_index(next1d, width)
+        assert next1d != -1, "ERROR, current shouldn't be -1 current = {} {}".format(current1d, current)
+        current = current_t
+        path_array.append(current)
+        tchar_map[current[0]][current[1]] = '*'
+        print(tchar_map)
