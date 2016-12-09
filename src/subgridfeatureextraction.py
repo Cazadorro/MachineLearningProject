@@ -9,7 +9,7 @@ prob_map_hit_threshold = int(ii8.max / 2)
 
 
 def get_sub_grid(x1, y1, x2, y2, grid):
-    return np.array([item[x1:x2] for item in grid[y1:y2]])
+    return np.array([item[x1:x2+1] for item in grid[y1:y2+1]])
 
 
 def cast_forward(x, y, theta):
@@ -27,20 +27,34 @@ def ray_cast(prob_map, start, theta, subgrid_dim):
     :param subgrid_dim: x,y of subgrid, centered on start
     :return:
     """
-    x_sq_rad = subgrid_dim[1] / 2
-    y_sq_rad = subgrid_dim[0] / 2
+    x_sq_rad = (subgrid_dim[1]-1) // 2
+    y_sq_rad = (subgrid_dim[0]-1) // 2
     subx1 = start[1] - x_sq_rad if x_sq_rad <= start[1] else 0
     suby1 = start[0] - y_sq_rad if y_sq_rad <= start[0] else 0
-    subx2 = start[1] + x_sq_rad if (x_sq_rad + start[1]) < prob_map.shape[1] else prob_map.shape[1] - 1
-    suby2 = start[0] + y_sq_rad if (y_sq_rad + start[0]) < prob_map.shape[0] else prob_map.shape[1] + 1
+    subx2 = start[1] + x_sq_rad if (x_sq_rad + start[1]) < prob_map.shape[1]-1 else prob_map.shape[1] - 1
+    suby2 = start[0] + y_sq_rad if (y_sq_rad + start[0]) < prob_map.shape[0]-1 else prob_map.shape[0] - 1
 
+    # print(subx1)
+    # print(suby1)
+    # print(subx2)
+    # print(suby2)
+    center_point_x = x_sq_rad if subx1 != 0 else start[1]
+    center_point_y = y_sq_rad if suby1 != 0 else start[0]
+    new_start = np.array([center_point_y, center_point_x])
     sub_grid = get_sub_grid(subx1, suby1, subx2, suby2, prob_map)
-    x = x_sq_rad + ray_cast_inc * cos(theta)
-    y = y_sq_rad + ray_cast_inc * sin(theta)
+    print(sub_grid)
+    print("theta", theta)
+    print("cx ", int(center_point_x), " cy ", int(center_point_y))
 
+    x = center_point_x + ray_cast_inc * cos(theta) + .0001
+    y = center_point_y + ray_cast_inc * sin(theta) + .0001
+
+    print("x ", x, " y ", y)
     while in_bounds((y, x), sub_grid.shape):
-        if sub_grid[(y, x)] > prob_map_hit_threshold:
-            return np.linalg.norm(np.array([start]) - np.array(([y, x])))
+        print("x ", int(round(x)), " y ", int(round(y)))
+        print(sub_grid[int(round(y)), int(round(x))])
+        if sub_grid[int(round(y)), int(round(x))] > prob_map_hit_threshold:
+            return np.linalg.norm(new_start - np.array(([y, x])))
         x, y = cast_forward(x, y, theta)
     # returning euclidian distance to found cast point.
     return np.inf
@@ -50,7 +64,7 @@ def get_cast_distances(prob_map, start, theta, subgrid_dim):
     angles = []
     current_angle = 0
     PI2 = 2 * math.pi
-    while current_angle <= PI2:
+    while current_angle < PI2:
         angles.append(current_angle)
         current_angle += theta
     return [ray_cast(prob_map, start, angle, subgrid_dim) for angle in angles]
