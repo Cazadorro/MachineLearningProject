@@ -1,5 +1,6 @@
 #!/bin/bash
 import numpy as np
+from math import sqrt
 
 ii8 = np.iinfo(np.uint8)
 
@@ -14,3 +15,8 @@ def to_1d_index(index, width):
 
 def from_1d_index(index, width):
     return index // width, index % width
+
+def get_dir_vector(start, end):
+    negated = np.array(end-start)
+    magnitude = sqrt(negated[0]**2 + negated[1]**2)
+    return negated/magnitude
