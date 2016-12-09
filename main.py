@@ -7,7 +7,7 @@ import src.mapgeneration as map_gen
 from src.mapextraction import read_map
 from src.floyedwarshals import follow_floyd
 from src.maputilities import to_1d_index, from_1d_index
-from floyedwarshalls import optAPSP, opt2APSP
+from floyedwarshalls import optAPSP, opt2APSP, opt4APSP
 import numpy as np
 
 def opt3APSP(cost_matrix, path_matrix, np_matrix = None):
@@ -21,17 +21,18 @@ def opt3APSP(cost_matrix, path_matrix, np_matrix = None):
             dist_ik = dist_matrix[i, k]
             if dist_ik != np.inf and i != k:
                 for j in range(i):
+                    old_dist = dist_matrix[i, j]
                     new_dist = dist_ik + dist_matrix[k, j]
                     if dist_matrix[i, j] > new_dist:
                         dist_matrix[i, j] = new_dist
-                        dist_matrix[i, j] = dist_matrix[j, i]
+                        dist_matrix[j, i] = dist_matrix[i, j]
                         next_ik = next_matrix[i, k]
                         next_matrix[i, j] = next_matrix[i, k]
                         next_jk = next_matrix[j, k]
                         next_matrix[j, i] = next_matrix[j, k]
     return dist_matrix, next_matrix
 
-#python setup.py build_ext --inplace
+#python cythonsrc/setup.py build_ext --inplace
 def main():
     for i in range(3):
         for j in range(3):
@@ -40,25 +41,33 @@ def main():
             print("i: ", i, " j: ", j)
             print("1d = ", x)
             print("2d = ", y)
-    readm, readc = read_map('testdata/testmap2.txt')
+    readm, readc = read_map('testdata/testmap.txt')
     readc = np.asarray(readc)
     #generated = map_gen.generate_map(5, 5)
     #print(generated)
     test_map = np.array([[10, 10, 1], [10, 1, 10], [1, 10, 10]], dtype=np.uint8)
     print(test_map)
-    cost_mat, path_matrix = map_gen.get_cost_matrix(readm)
-    dist, next = opt3APSP(cost_mat, path_matrix)
+    cost_mat, path_mat = map_gen.get_cost_matrix(readm)
+    dist, next = opt4APSP(cost_mat, path_mat, readm)
     # for i in range(dist.shape[0]):
     #     for j in range(i):
     #         dist[j,i] = dist[i,j]
     #         next[j,i] = next[i,j]
-    np.savetxt('path.out', cost_mat, delimiter=',', fmt='%4.0f')
-    np.savetxt('cost.out', cost_mat, delimiter=',', fmt='%4.4f')
+    np.savetxt('path.out', path_mat, delimiter=',', fmt='%4.0f')
+    np.savetxt('cost.out', cost_mat, delimiter=',', fmt='%4.1f')
     np.savetxt('next.out', next, delimiter=',', fmt='%4.0f')
-    np.savetxt('dist.out', dist, delimiter=',', fmt='%4.4f')
+    np.savetxt('dist.out', dist, delimiter=',', fmt='%4.1f')
 
     print(readc.shape)
-    follow_floyd(readc, next, (0, 0), (readc.shape[0] - 1, readc.shape[1] - 1))
+    tchar_map = follow_floyd(readc, next, (0, 0), (readc.shape[0] - 1, readc.shape[1] - 1))
+    file = open('adsf.txt', 'w')
+
+    for charline in tchar_map:
+        for char in charline:
+            file.write(char)
+        file.write("\n")
+    file.close()
+
 
     pass
 

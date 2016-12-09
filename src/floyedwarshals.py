@@ -32,7 +32,7 @@ def follow_floyd(char_map, path_matrix, start, end):
     path_array.append(current)
     end1d = to_1d_index(end, width)
     tchar_map[current[0]][current[1]] = '*'
-    print(tchar_map)
+    #print(tchar_map)
     while current != end:
 
         current1d = to_1d_index(current, width)
@@ -42,4 +42,6 @@ def follow_floyd(char_map, path_matrix, start, end):
         current = current_t
         path_array.append(current)
         tchar_map[current[0]][current[1]] = '*'
-        print(tchar_map)
+        #print(tchar_map)
+        print(current)
+    return tchar_map

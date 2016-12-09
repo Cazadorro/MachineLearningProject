@@ -1,8 +1,15 @@
 #!python
-#cython: language_level=3, boundscheck=False
+#cython: language_level=3, boundscheck=False, wraparound=False
 # distutils: language=c++
 
 import numpy as np
+
+def to_1d_index(index, width):
+    return (index[0] * width) + index[1]
+
+
+def from_1d_index(index, width):
+    return index // width, index % width
 
 def FloydAPSP(cost_matrix):
     # cost matrix must be square
@@ -74,7 +81,34 @@ def opt2APSP(cost_matrix, path_matrix, np_matrix = None):
                     new_dist = dist_ik + dist_matrix[k, j]
                     if dist_matrix[i, j] > new_dist:
                         dist_matrix[i, j] = new_dist
-                        dist_matrix[i, j] = dist_matrix[j, i]
+                        dist_matrix[j, i] = dist_matrix[i, j]
                         next_matrix[i, j] = next_matrix[i, k]
                         next_matrix[j, i] = next_matrix[j, k]
+    return dist_matrix, next_matrix
+
+def opt4APSP(cost_matrix, path_matrix, np_matrix):
+    cdef int n
+    n = cost_matrix.shape[0]
+    dist_matrix = np.copy(cost_matrix)
+    next_matrix = np.copy(path_matrix)
+    print(n)
+    width = len(np_matrix[0])
+    cdef int i, j, k
+    for k in range(n):
+        k2d = from_1d_index(k, width)
+        if np_matrix[k2d] != np.inf:
+            print(k)
+            for i in range(n):
+                i2d = from_1d_index(i, width)
+                if np_matrix[i2d] != np.inf:
+                    dist_ik = dist_matrix[i, k]
+                    if dist_ik != np.inf and i != k:
+                        for j in range(i):
+                            old_dist = dist_matrix[i, j]
+                            new_dist = dist_ik + dist_matrix[k, j]
+                            if dist_matrix[i, j] > new_dist:
+                                dist_matrix[i, j] = new_dist
+                                dist_matrix[j, i] = dist_matrix[i, j]
+                                next_matrix[i, j] = next_matrix[i, k]
+                                next_matrix[j, i] = next_matrix[j, k]
     return dist_matrix, next_matrix
