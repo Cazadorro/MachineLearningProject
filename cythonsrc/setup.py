@@ -8,7 +8,7 @@ cppsrc_dir = "cythonsrc/cppsource/"
 
 source2 = [cython_dir + "floyedwarshalls.pyx", ]
 
-compile_args = ["-std=c++11", "-g", '-O3', '-Ox']
+compile_args = ["-std=c++11", "-g"]
 language = 'c++'
 link_args = ["-std=c++11"]
 

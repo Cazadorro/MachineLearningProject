@@ -86,7 +86,6 @@ def t_main():
         predict = output_layer
         pred = predict.eval({x: test_x[1].reshape(-1, 20)})
         print(pred)
-        writer
         merged = tf.summary.merge_all()
 
 
