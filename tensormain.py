@@ -14,9 +14,9 @@ epochs = 5
 batch_size = 128
 
 def t_main():
-    input_x = read_csv("map1_x_data.csv", float)
     test_x = read_csv("map2_x_data.csv", float)
     test_y = read_csv("map2_y_data.csv", float)
+    input_x = read_csv("map1_x_data.csv", float)
     expected_y = read_csv("map1_y_data.csv", float)
     # input rays and goal + start
     x = tf.placeholder(tf.float32, shape=[None, input_num_units])
@@ -33,7 +33,9 @@ def t_main():
     hidden_layer = tf.add(tf.matmul(x, weights['hidden']), biases['hidden'])
     hidden_layer = tf.nn.relu(hidden_layer)
     output_layer = tf.matmul(hidden_layer, weights['output']) + biases['output']
-    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(output_layer, y))
+
+    #cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(output_layer, y))
+    cost = tf.reduce_mean(tf.abs(tf.subtract(output_layer, y)))
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
     init = tf.global_variables_initializer()
     split_v = 100
