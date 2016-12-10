@@ -1,6 +1,7 @@
 #!/bin/bash
 
 import tensorflow as tf
+from src.testgeneration import read_csv
 
 NUM_RAYS = 16
 input_num_units = NUM_RAYS + 4
@@ -13,6 +14,8 @@ epochs = 5
 batch_size = 128
 
 def t_main():
+    input_x = read_csv("maps/map1.txt", float)
+    expected_y
     # input rays and goal + start
     x = tf.placeholder(tf.float32, shape=[None, input_num_units])
     y = tf.placeholder(tf.float32, shape= [None, output_num_units])
@@ -40,7 +43,7 @@ def t_main():
         ###     create pre-processed batch
         ###     run optimizer by feeding batch
         ###     find cost and reiterate to minimize
-
+        _, c = sess.run([optimizer, cost], feed_dict={x: batch_x, y: batch_y})
         for epoch in range(epochs):
             avg_cost = 0
             total_batch = int(train.shape[0] / batch_size)

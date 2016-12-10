@@ -58,6 +58,6 @@ def gen_n_test(np_matrix, next_path, num_points, sub_grid_size, num_angle):
         next_point = from_1d_index(nk, width)
         y_line = get_dir_vector(start, next_point).reshape(1, 2)
         x_line = sgfe.get_cast_distances(np_matrix, start, theta, sub_grid_size)
-        input_x.append(x_line)
+        input_x.append(x_line + [start[0], start[1]] + [end[0], end[1]])
         expected_y.append(y_line)
     return input_x, expected_y
