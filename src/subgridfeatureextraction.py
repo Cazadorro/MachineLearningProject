@@ -42,17 +42,10 @@ def ray_cast(prob_map, start, theta, subgrid_dim):
     center_point_y = y_sq_rad if suby1 != 0 else start[0]
     new_start = np.array([center_point_y, center_point_x])
     sub_grid = get_sub_grid(subx1, suby1, subx2, suby2, prob_map)
-    print(sub_grid)
-    print("theta", theta)
-    print("cx ", int(center_point_x), " cy ", int(center_point_y))
-
     x = center_point_x + ray_cast_inc * cos(theta) + .0001
     y = center_point_y + ray_cast_inc * sin(theta) + .0001
 
-    print("x ", x, " y ", y)
-    while in_bounds((y, x), sub_grid.shape):
-        print("x ", int(round(x)), " y ", int(round(y)))
-        print(sub_grid[int(round(y)), int(round(x))])
+    while in_bounds((int(round(y)), int(round(x))), sub_grid.shape):
         if sub_grid[int(round(y)), int(round(x))] > prob_map_hit_threshold:
             return np.linalg.norm(new_start - np.array(([y, x])))
         x, y = cast_forward(x, y, theta)

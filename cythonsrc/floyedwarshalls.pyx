@@ -64,29 +64,15 @@ def optAPSP(cost_matrix, np_matrix = None):
                     next_matrix[i, j] = next_matrix[k, i]
     return dist_matrix, next_matrix
 
-def opt2APSP(cost_matrix, path_matrix, np_matrix = None):
-    cdef int n
-    n = cost_matrix.shape[0]
-    dist_matrix = np.copy(cost_matrix)
-    next_matrix = np.copy(path_matrix)
-    print(n)
-    cdef int i, j, k
-    cdef float dist_ik
-    for k in range(n):
-        print(k)
-        for i in range(n):
-            dist_ik = dist_matrix[i, k]
-            if dist_ik != np.inf and i != k:
-                for j in range(i):
-                    new_dist = dist_ik + dist_matrix[k, j]
-                    if dist_matrix[i, j] > new_dist:
-                        dist_matrix[i, j] = new_dist
-                        dist_matrix[j, i] = dist_matrix[i, j]
-                        next_matrix[i, j] = next_matrix[i, k]
-                        next_matrix[j, i] = next_matrix[j, k]
-    return dist_matrix, next_matrix
+def optimizedAPSP(cost_matrix, path_matrix, np_matrix):
+    """
+    optimized version of floyed warshals algorithm
+    :param cost_matrix: cost matrix for every node in graph
+    :param path_matrix: initial path connection matrix
+    :param np_matrix: numpy matrix which cost and path matrix are based on
+    :return: dist_matrix, optimized next_path matrix
+    """
 
-def opt4APSP(cost_matrix, path_matrix, np_matrix):
     cdef int n
     n = cost_matrix.shape[0]
     dist_matrix = np.copy(cost_matrix)
