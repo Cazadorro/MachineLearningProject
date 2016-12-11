@@ -51,7 +51,7 @@ def ray_cast(prob_map, start, theta, subgrid_dim):
         x, y = cast_forward(x, y, theta)
     # returning euclidian distance to found cast point.
     #np.inf
-    return 1000
+    return -1
 
 
 def get_cast_distances(prob_map, start, theta, subgrid_dim):

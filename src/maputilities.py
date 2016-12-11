@@ -20,4 +20,4 @@ def from_1d_index(index, width):
 def get_dir_vector(start, end):
     negated = np.array(end - start)
     magnitude = sqrt(negated[0] ** 2 + negated[1] ** 2)
-    return negated / magnitude
+    return np.nan_to_num(negated / magnitude)

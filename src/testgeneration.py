@@ -49,6 +49,7 @@ def gen_n_test(np_matrix, next_path, num_points, sub_grid_size, num_angle):
     start_pts, end_pts = gen_n_points(empty_indices, num_points)
     input_x = []
     expected_y = []
+    sgs_rad = (sub_grid_size[0]) / 2
     for i in range(num_points):
         start = np.array(start_pts[i])
         end = np.array(end_pts[i])
@@ -57,7 +58,8 @@ def gen_n_test(np_matrix, next_path, num_points, sub_grid_size, num_angle):
         nk = next_path[si, gj]
         next_point = from_1d_index(nk, width)
         y_line = get_dir_vector(start, next_point).reshape(1, 2)
-        x_line = sgfe.get_cast_distances(np_matrix, start, theta, sub_grid_size)
-        input_x.append(x_line + [start[0], start[1]] + [end[0], end[1]])
+        x_line = np.array(sgfe.get_cast_distances(np_matrix, start, theta, sub_grid_size))
+        x_line = [(x/sgs_rad if x > 0 else -1) for x in x_line]
+        input_x.append(x_line + [start[0]/width, start[1]/width] + [end[0]/width, end[1]/width])
         expected_y.append([y_line[0,0]]+[y_line[0,1]])
     return input_x, expected_y
